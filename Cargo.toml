@@ -1,0 +1,11 @@
+[package]
+name = "git-heat"
+version = "0.1.0"
+description = "Git commit calendar"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.38"
+apca = { git = "https://github.com/zsugabubus/apca-rs" }
+clap = { version = "4.5.9", default-features = false, features = ["std", "help", "usage", "error-context", "derive"] }
+thiserror = "1.0.63"
