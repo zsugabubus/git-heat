@@ -477,6 +477,9 @@ mod tests {
         surface
             .translate(0, 1)
             .write("b", Style::default().with_fg(white).with_bg(black));
-        assert_eq!(surface.to_ansi_string(), "\x1b[38;2;0;0;0m\x1b[48;2;255;255;255m\x1b[1ma\x1b[38;2;255;255;255m\x1b[48;2;0;0;0m\x1b[22mb\x1b[0m\n");
+        assert_eq!(
+            surface.to_ansi_string(),
+            "\x1b[38;2;0;0;0m\x1b[48;2;255;255;255m\x1b[1ma\x1b[38;2;255;255;255m\x1b[48;2;0;0;0m\x1b[22mb\x1b[0m\n"
+        );
     }
 }

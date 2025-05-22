@@ -1,11 +1,11 @@
 use chrono::{
-    format::{parse_and_remainder, strftime::StrftimeItems, Parsed},
     DateTime, Datelike, FixedOffset, NaiveDate, Timelike, Weekday,
+    format::{Parsed, parse_and_remainder, strftime::StrftimeItems},
 };
 use clap::{Parser, ValueEnum};
 use std::{
     collections::HashMap,
-    io::{stdout, BufRead, BufReader, BufWriter},
+    io::{BufRead, BufReader, BufWriter, stdout},
     ops::Range,
     process::{Command, Stdio},
 };
@@ -874,7 +874,7 @@ fn build_git_command(cli: &Cli) -> Command {
     ]);
 
     let mut arg = |option: &str, value: &Option<String>| {
-        if let Some(ref s) = value {
+        if let Some(s) = value {
             cmd.args([option, s]);
         }
     };
