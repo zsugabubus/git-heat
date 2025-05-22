@@ -364,24 +364,24 @@ where
 
     for y in (0..height).step_by(2) {
         for x in 0..width {
-            let (top, lower) = match (f(y, x), f(y + 1, x)) {
-                (Some(top), Some(lower)) => (top, lower),
-                (Some(top), None) => (top, background),
+            let (upper, lower) = match (f(y, x), f(y + 1, x)) {
+                (Some(upper), Some(lower)) => (upper, lower),
+                (Some(upper), None) => (upper, background),
                 (None, Some(lower)) => (background, lower),
                 (None, None) => continue,
             };
 
-            let cell = if lower == top {
+            let cell = if lower == upper {
                 Cell::new(' ', Style::default().with_bg(lower))
             } else if let Ok(lower) = ForegroundColor::try_from(lower) {
                 Cell::new(
                     LOWER_HALF_BLOCK,
-                    Style::default().with_fg(lower).with_bg(top),
+                    Style::default().with_fg(lower).with_bg(upper),
                 )
-            } else if let Ok(top) = ForegroundColor::try_from(top) {
+            } else if let Ok(upper) = ForegroundColor::try_from(upper) {
                 Cell::new(
                     UPPER_HALF_BLOCK,
-                    Style::default().with_fg(top).with_bg(lower),
+                    Style::default().with_fg(upper).with_bg(lower),
                 )
             } else {
                 unreachable!();
@@ -1361,42 +1361,42 @@ mod tests {
         ];
 
         for bg in bgs {
-            for top in squares {
+            for upper in squares {
                 for lower in squares {
                     let mut surface = None::<CellSurface>;
 
                     draw_half_squares(&mut surface, bg, 2, 1, |y, x| match (y, x) {
-                        (0, 0) => top,
+                        (0, 0) => upper,
                         (1, 0) => lower,
                         _ => unreachable!(),
                     });
 
-                    if top.is_none() && lower.is_none() {
+                    if upper.is_none() && lower.is_none() {
                         assert_eq!(surface, None);
                     } else {
                         let CellSurface { y, x, cell } = surface.unwrap();
                         let style = cell.style();
 
-                        let top = top.unwrap_or(bg);
+                        let upper = upper.unwrap_or(bg);
                         let lower = lower.unwrap_or(bg);
 
                         assert_eq!((y, x), (0, 0));
 
                         match cell.text() {
                             ' ' => {
-                                assert_eq!(top, style.bg());
+                                assert_eq!(upper, style.bg());
                                 assert_eq!(lower, style.bg());
                             }
                             '▀' => {
-                                assert_eq!(top.try_into(), Ok(style.fg()));
+                                assert_eq!(upper.try_into(), Ok(style.fg()));
                                 assert_eq!(lower, style.bg());
-                                assert!(lower != top);
+                                assert!(lower != upper);
                                 assert!(style.bg().is_default());
                             }
                             '▄' => {
-                                assert_eq!(top, style.bg());
+                                assert_eq!(upper, style.bg());
                                 assert_eq!(lower.try_into(), Ok(style.fg()));
-                                assert!(lower != top);
+                                assert!(lower != upper);
                             }
                             _ => unreachable!(),
                         }
