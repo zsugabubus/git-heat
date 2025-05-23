@@ -946,6 +946,10 @@ fn read_git(cli: &Cli) -> Vec<Group> {
         }
     }
 
+    if !child.wait().unwrap().success() {
+        std::process::exit(1);
+    }
+
     groups
 }
 
