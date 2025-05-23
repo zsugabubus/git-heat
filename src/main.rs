@@ -326,7 +326,7 @@ impl HeatColors {
     fn get(&self, n: u32) -> Style {
         *self
             .styles
-            .get(usize::try_from((n + self.step - 1) / self.step).unwrap())
+            .get(usize::try_from(n.div_ceil(self.step)).unwrap())
             .unwrap_or_else(|| self.styles.last().unwrap())
     }
 }
@@ -391,7 +391,7 @@ where
         }
     }
 
-    (height + 1) / 2
+    height.div_ceil(2)
 }
 
 fn draw_heat_grid<S, F>(
@@ -469,7 +469,7 @@ where
 
     let normalize = |n: u32| {
         if relative {
-            (n * colors.max() + max - 1) / max
+            (n * colors.max()).div_ceil(max)
         } else {
             n
         }
@@ -541,6 +541,7 @@ fn last_day_of_month(year: i32, month: u32) -> Option<NaiveDate> {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn draw_month_grid<S, F>(
     surface: &mut S,
     year: i32,
@@ -764,6 +765,7 @@ fn draw_month_names<S>(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn draw_year_commits<S>(
     surface: &mut S,
     commits: &CommitsPerYear,
@@ -862,7 +864,7 @@ fn build_git_command(cli: &Cli) -> Command {
         (Some(author), None) => author,
         (None, Some(committer)) => committer,
         (Some(author), Some(committer)) => format!("{author}, {committer}"),
-        (None, None) => "".to_owned(),
+        (None, None) => String::new(),
     };
 
     let mut cmd = Command::new("git");
@@ -979,7 +981,7 @@ fn main() {
 
     let all_years = groups
         .iter()
-        .map(|group| group.years())
+        .map(Group::years)
         .reduce(|acc, x| acc.start.min(x.start)..acc.end.max(x.end))
         .unwrap_or(0..0);
 

@@ -13,6 +13,7 @@ impl Color {
     }
 
     #[must_use]
+    #[cfg(test)]
     pub const fn is_default(self) -> bool {
         matches!(self, Self::Default)
     }
@@ -146,6 +147,7 @@ impl Style {
     }
 
     #[must_use]
+    #[cfg(test)]
     pub fn fg(&self) -> ForegroundColor {
         self.fg
     }
@@ -168,6 +170,7 @@ impl Style {
     }
 
     #[must_use]
+    #[cfg(test)]
     pub fn bold(&self) -> bool {
         self.bold
     }
@@ -196,11 +199,13 @@ impl Cell {
     }
 
     #[must_use]
+    #[cfg(test)]
     pub fn text(&self) -> char {
         self.ch
     }
 
     #[must_use]
+    #[cfg(test)]
     pub fn style(&self) -> &Style {
         &self.style
     }
@@ -269,17 +274,8 @@ impl SurfaceBuffer {
     }
 
     #[must_use]
-    pub fn height(&self) -> usize {
-        self.lines.len()
-    }
-
-    #[must_use]
     pub fn width(&self) -> usize {
-        self.lines
-            .iter()
-            .map(|line| line.width())
-            .max()
-            .unwrap_or(0)
+        self.lines.iter().map(Line::width).max().unwrap_or(0)
     }
 
     pub fn put(&mut self, y: usize, x: usize, cell: Cell) {
@@ -298,10 +294,10 @@ impl SurfaceBuffer {
         ) -> io::Result<()> {
             match color {
                 Color::Default => {
-                    write!(writer, "\x1b[{}m", reset_param)
+                    write!(writer, "\x1b[{reset_param}m")
                 }
                 Color::TrueColor { r, g, b } => {
-                    write!(writer, "\x1b[{};2;{};{};{}m", set_param, r, g, b)
+                    write!(writer, "\x1b[{set_param};2;{r};{g};{b}m")
                 }
             }
         }
@@ -364,7 +360,7 @@ pub struct Translate<'a, S: ?Sized> {
     x: usize,
 }
 
-impl<'a, S> Surface for Translate<'a, S>
+impl<S> Surface for Translate<'_, S>
 where
     S: Surface,
 {
